@@ -4,9 +4,10 @@
 1. [Overview](#overview)
 2. [Vector Operations API](#vector-operations-api)
 3. [Linear Regression API](#linear-regression-api)
-4. [Quick Reference](#quick-reference)
-5. [Best Practices](#best-practices)
-6. [Troubleshooting](#troubleshooting)
+4. [Logistic Regression API](#logistic-regression-api)
+5. [Quick Reference](#quick-reference)
+6. [Best Practices](#best-practices)
+7. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -418,6 +419,188 @@ The module uses fixed-point arithmetic where numbers are represented as:
 
 ---
 
+## Logistic Regression API
+
+### Overview
+
+The `ml_logistic_regression` module implements logistic regression for binary classification. It performs the mathematical operation: `y = sigmoid(w₁x₁ + w₂x₂ + ... + wₙxₙ + b)`, where `sigmoid(x) = 1 / (1 + e^(-x))`. This module is optimized for machine learning applications and uses fixed-point arithmetic with sigmoid activation for efficient hardware implementation.
+
+### Module Interface
+
+```systemverilog
+module ml_logistic_regression #(
+    parameter WIDTH = 32,              // Bit width of vector elements
+    parameter FRAC_BITS = 16,          // Fractional bits for fixed-point arithmetic
+    parameter LENGTH = 16              // Vector length (number of features)
+)(
+    input  logic signed [WIDTH-1:0] weights [0:LENGTH-1],  // Weight vector
+    input  logic signed [WIDTH-1:0] inputs  [0:LENGTH-1], // Input feature vector
+    input  logic signed [WIDTH-1:0] bias,                  // Bias term
+    output logic signed [WIDTH-1:0] result                 // Logistic regression output (0 to 1 range)
+);
+```
+
+### How It Works
+
+The logistic regression module performs the following steps:
+
+1. **Dot Product Calculation**: Computes `weights · inputs` using the internal `vector_dot` module
+2. **Fixed-Point Scaling**: Scales the result using the internal `fixed_point` module
+3. **Bias Addition**: Adds the bias term using fixed-point arithmetic
+4. **Sigmoid Activation**: Applies sigmoid function using the internal `activation_sigmoid` module
+5. **Output**: Provides the final logistic regression result (probability between 0 and 1)
+
+### Usage Examples
+
+#### Basic Logistic Regression
+
+```systemverilog
+module simple_logistic_regression (
+    input  logic clk,
+    input  logic rst_n,
+    input  logic signed [31:0] weights [0:3],
+    input  logic signed [31:0] inputs  [0:3],
+    input  logic signed [31:0] bias,
+    output logic signed [31:0] probability
+);
+
+    // Instantiate logistic regression module
+    ml_logistic_regression #(
+        .WIDTH(32),
+        .FRAC_BITS(16),
+        .LENGTH(4)
+    ) logistic_inst (
+        .weights(weights),
+        .inputs(inputs),
+        .bias(bias),
+        .result(probability)
+    );
+
+endmodule
+```
+
+#### Binary Classifier
+
+```systemverilog
+module binary_classifier (
+    input  logic clk,
+    input  logic rst_n,
+    input  logic signed [31:0] weights [0:7],
+    input  logic signed [31:0] inputs  [0:7],
+    input  logic signed [31:0] bias,
+    output logic signed [31:0] probability,
+    output logic classification
+);
+
+    // Instantiate binary classifier module
+    ml_binary_classifier #(
+        .WIDTH(32),
+        .FRAC_BITS(16),
+        .LENGTH(8),
+        .THRESHOLD(0.5)           // 50% threshold for classification
+    ) classifier_inst (
+        .weights(weights),
+        .inputs(inputs),
+        .bias(bias),
+        .probability(probability),
+        .classification(classification)
+    );
+
+endmodule
+```
+
+#### Multi-class Logistic Regression
+
+```systemverilog
+module multiclass_classifier #(
+    parameter WIDTH = 32,
+    parameter FRAC_BITS = 16,
+    parameter FEATURE_LENGTH = 8,
+    parameter NUM_CLASSES = 3
+)(
+    input  logic clk,
+    input  logic rst_n,
+    input  logic signed [WIDTH-1:0] weights [0:NUM_CLASSES-1][0:FEATURE_LENGTH-1],
+    input  logic signed [WIDTH-1:0] inputs  [0:FEATURE_LENGTH-1],
+    input  logic signed [WIDTH-1:0] biases  [0:NUM_CLASSES-1],
+    output logic signed [WIDTH-1:0] probabilities [0:NUM_CLASSES-1],
+    output logic [$clog2(NUM_CLASSES)-1:0] predicted_class
+);
+
+    // Instantiate multi-class logistic regression
+    ml_multiclass_logistic #(
+        .WIDTH(WIDTH),
+        .FRAC_BITS(FRAC_BITS),
+        .FEATURE_LENGTH(FEATURE_LENGTH),
+        .NUM_CLASSES(NUM_CLASSES)
+    ) multiclass_inst (
+        .weights(weights),
+        .inputs(inputs),
+        .biases(biases),
+        .probabilities(probabilities),
+        .predicted_class(predicted_class)
+    );
+
+endmodule
+```
+
+### Sigmoid Activation Function
+
+The logistic regression uses the sigmoid activation function:
+
+```
+sigmoid(x) = 1 / (1 + e^(-x))
+```
+
+#### Properties:
+- **Range**: (0, 1) - outputs probabilities
+- **S-shaped curve**: Smooth transition between 0 and 1
+- **Saturation**: Approaches 0 and 1 asymptotically
+- **Differentiable**: Smooth gradient for training
+
+#### Fixed-Point Implementation:
+The sigmoid function is implemented using lookup tables and polynomial approximations optimized for hardware efficiency.
+
+### Classification Thresholds
+
+#### Binary Classification:
+- **Threshold = 0.5**: Standard 50% decision boundary
+- **Threshold < 0.5**: More conservative classification (fewer positive predictions)
+- **Threshold > 0.5**: More aggressive classification (more positive predictions)
+
+#### Multi-class Classification:
+- **One-vs-All**: Each class has its own binary classifier
+- **Maximum Probability**: Class with highest probability is selected
+- **Confidence**: Probability values indicate prediction confidence
+
+### Performance Characteristics
+
+#### Timing:
+- **Combinational Logic**: All operations complete in one clock cycle
+- **Sigmoid Lookup**: Fast table-based sigmoid computation
+- **Critical Path**: Determined by dot product, scaling, and sigmoid operations
+
+#### Resource Usage:
+- **Multipliers**: `LENGTH` multipliers for dot product
+- **Adders**: Tree of adders for accumulation
+- **Lookup Tables**: Sigmoid function approximation tables
+- **Logic**: Scaling, bias addition, and classification logic
+
+### Common Use Cases
+
+#### Machine Learning Applications:
+- **Binary Classification**: Spam detection, medical diagnosis
+- **Multi-class Classification**: Image recognition, text categorization
+- **Probability Estimation**: Risk assessment, recommendation systems
+- **Neural Network Layers**: Activation functions in deep networks
+
+#### Signal Processing:
+- **Pattern Recognition**: Signal classification
+- **Anomaly Detection**: Outlier identification
+- **Decision Making**: Threshold-based decisions
+
+---
+
 ## Quick Reference
 
 ### Parameter Guidelines
@@ -457,6 +640,9 @@ The module uses fixed-point arithmetic where numbers are represented as:
 | vector_ops | Dot Product | `3'b101` | a, b | dot_result |
 | vector_ops | Reduction | `3'b110` | a | reduction_result |
 | ml_linear_regression | Linear Regression | N/A | weights, inputs, bias | result |
+| ml_logistic_regression | Logistic Regression | N/A | weights, inputs, bias | result (0-1) |
+| ml_binary_classifier | Binary Classification | N/A | weights, inputs, bias | probability, classification |
+| ml_multiclass_logistic | Multi-class Classification | N/A | weights, inputs, biases | probabilities, predicted_class |
 
 ---
 
