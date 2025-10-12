@@ -6,6 +6,8 @@
 
 A comprehensive hardware-optimized machine learning library for SystemVerilog, designed for FPGA and ASIC implementation. This library provides efficient fixed-point arithmetic operations, vector processing, and machine learning algorithms optimized for hardware acceleration.
 
+Exepected Completion : 17th October
+
 ## 🚀 Features
 
 ### ✅ Currently Available
