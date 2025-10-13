@@ -1,4 +1,4 @@
-# SystemVerilog ML Library
+# Sveri-ML : SystemVerilog ML Library
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![SystemVerilog](https://img.shields.io/badge/SystemVerilog-2017-blue.svg)](https://ieeexplore.ieee.org/document/8299595)
