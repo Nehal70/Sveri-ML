@@ -1,8 +1,11 @@
-module activation_relu #(WIDTH = 32) (
-    input logic signed [WIDTH-1:0] input_data,
-    input logic signed [WIDTH-1:0] output_data
+module activation_relu #(
+    parameter WIDTH = 32
+)(
+    input  logic signed [WIDTH-1:0] in_data,
+    output logic signed [WIDTH-1:0] out_data
 );
 
-    assign output_data = (input_data > 0) ? input_data : 0;
+    // plain relu with signed compare
+    assign out_data = (in_data > '0) ? in_data : '0;
 
 endmodule

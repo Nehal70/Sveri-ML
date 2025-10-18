@@ -6,62 +6,66 @@
 
 A comprehensive hardware-optimized machine learning library for SystemVerilog, designed for FPGA and ASIC implementation. This library provides efficient fixed-point arithmetic operations, vector processing, and machine learning algorithms optimized for hardware acceleration.
 
-Exepected Completion : 17th October
 
-## 🚀 Features
+## Features
 
-### ✅ Currently Available
+### Currently Available
 
-- **Vector Operations**: Complete suite of vector arithmetic operations
-- **Linear Regression**: Hardware-optimized linear regression implementation
-- **Logistic Regression**: Binary and multi-class classification with sigmoid activation
-- **Fixed-Point Arithmetic**: Efficient numerical computation with configurable precision
-- **Modular Design**: Reusable components for complex machine learning systems
-- **Hardware Optimized**: Designed for FPGA and ASIC implementation
+- **Vector Operations**: complete suite of vector arithmetic operations
+- **Linear Regression**: hardware-optimized linear regression implementation
+- **Logistic Regression**: binary and multi-class classification with sigmoid activation
+- **Fixed-Point Arithmetic**: efficient numerical computation with configurable precision
+- **Activation Functions**: relu, leaky relu, tanh, sigmoid, softmax
+- **Fully Connected Layer**: dense layer y = W·x + b (api + internal)
+- **Modular Design**: reusable components for complex machine learning systems
+- **Hardware Optimized**: designed for fpga and asic implementation
 
-### 🔮 Coming Soon
+### Coming Soon
 
-- **Activation Functions**: Comprehensive activation function library
-- **Neural Network Layers**: Complete neural network layer implementations
-- **Pipeline Module**: Flexible pipeline system for connecting ML components
+- **Pipeline Module**: flexible pipeline system for connecting ml components
 
-## 📚 Documentation
+## Documentation
 
 - **[Complete User Guide](docs/user_guide.md)** - Comprehensive API documentation
 - **[Vector Operations Guide](docs/vector_ops_guide.md)** - Detailed vector operations documentation
 - **[API Reference](docs/api_reference.md)** - Technical API specifications
 
-## 🏗️ Architecture
+## Architecture
 
 ### Library Structure
 
 ```
 src/
-├── api/                    # User-facing API modules
-│   ├── vector_ops.sv       # Vector operations interface
-│   ├── linear_regression.sv # Linear regression implementation
-│   └── logistic_regression.sv # Logistic regression implementation
-├── internal/               # Internal building blocks
-│   ├── adder.sv           # Basic adder module
-│   ├── multiplier.sv      # Basic multiplier module
-│   ├── fixed_point.sv     # Fixed-point arithmetic
-│   ├── vector_add.sv      # Vector addition
-│   ├── vector_sub.sv      # Vector subtraction
-│   ├── vector_dot.sv      # Vector dot product
-│   ├── activation_relu.sv # ReLU activation function
-│   └── activation_sigmoid.sv # Sigmoid activation function
-└── tb/                    # Testbenches
+├── api/                      # user-facing api modules
+│   ├── vector_ops.sv         # vector operations interface
+│   ├── linear_regression.sv  # linear regression implementation
+│   ├── logistic_regression.sv# logistic regression implementation
+│   └── fully_connected.sv    # fully connected layer api
+├── internal/                 # internal building blocks
+│   ├── adder.sv              # basic adder module
+│   ├── multiplier.sv         # basic multiplier module
+│   ├── fixed_point.sv        # fixed-point arithmetic
+│   ├── vector_add.sv         # vector addition
+│   ├── vector_sub.sv         # vector subtraction
+│   ├── vector_dot.sv         # vector dot product
+│   ├── activation_relu.sv    # relu activation
+│   ├── activation_leaky_relu.sv # leaky relu activation
+│   ├── activation_tanh.sv    # tanh activation
+│   ├── activation_sigmoid.sv # sigmoid activation
+│   ├── activation_softmax.sv # softmax activation (vector)
+│   └── fully_connected.sv    # dense layer core
+└── tb/                       # testbenches
 ```
 
 ### Design Philosophy
 
-- **Modularity**: Each component has a single responsibility
-- **Reusability**: Internal modules are reused across API modules
-- **Efficiency**: Optimized for hardware implementation
-- **Flexibility**: Parameterizable for different use cases
-- **Consistency**: Uniform interface across all modules
+- **Modularity**: each component has a single responsibility
+- **Reusability**: internal modules are reused across api modules
+- **Efficiency**: optimized for hardware implementation
+- **Flexibility**: parameterizable for different use cases
+- **Consistency**: uniform interface across all modules
 
-## 🛠️ Installation
+## Installation
 
 ### Prerequisites
 
@@ -86,19 +90,19 @@ src/
 
 3. **Instantiate modules**:
    ```systemverilog
-   // Vector addition example
+   // vector addition example
    vector_ops #(.WIDTH(32), .LENGTH(8)) vec_ops (
        .a(input_vector_a),
        .b(input_vector_b),
        .scalar(32'd0),
-       .op(3'b000),  // Addition
+       .op(3'b000),  // addition
        .vector_result(result_vector),
        .dot_result(),
        .reduction_result()
    );
    ```
 
-## 📖 Usage Examples
+## Usage Examples
 
 ### Vector Operations
 
@@ -115,7 +119,7 @@ module vector_processor (
         .a(vector_a),
         .b(vector_b),
         .scalar(32'd0),
-        .op(3'b000),  // Addition
+        .op(3'b000),  // addition
         .vector_result(result),
         .dot_result(),
         .reduction_result()
@@ -179,37 +183,32 @@ module binary_classifier (
 endmodule
 ```
 
-## 🔮 Roadmap
+## Roadmap
 
-### Phase 1: Core ML Operations ✅
-- [x] Vector operations (addition, subtraction, multiplication, scaling)
-- [x] Linear regression
-- [x] Logistic regression
-- [x] Fixed-point arithmetic
+### Phase 1: Core ML Operations
+- [x] vector operations (addition, subtraction, multiplication, scaling)
+- [x] linear regression
+- [x] logistic regression
+- [x] fixed-point arithmetic
 
-### Phase 2: Activation Functions 🚧
-- [ ] **Activation Functions Module**: Comprehensive activation function library
-  - ReLU, Leaky ReLU, ELU, Swish
-  - Tanh, Sigmoid, Softmax
-  - Custom activation functions
-  - Hardware-optimized implementations
+### Phase 2: Activation Functions
+- [x] activation functions: relu, leaky relu, tanh, sigmoid, softmax
+  - lightweight, lut-backed where helpful and clean fixed-point design
 
-### Phase 3: Neural Network Layers 🚧
-- [ ] **Neural Network Layer Module**: Complete neural network implementations
-  - Fully connected layers
-  - Convolutional layers (1D, 2D)
-  - Pooling layers (Max, Average)
-  - Batch normalization
-  - Dropout layers
+### Phase 3: Neural Network Layers
+- [x] fully connected layers (api + internal)
+- [ ] pooling layers (max, average)
+- [ ] batch normalization
+- [ ] dropout layers
 
-### Phase 4: Pipeline System 🚧
-- [ ] **Pipeline Module**: Flexible pipeline system for connecting ML components
-  - Component chaining
-  - Data flow management
-  - Pipeline optimization
-  - Dynamic reconfiguration
+### Phase 4: Pipeline System
+- [ ] pipeline module: flexible pipeline system for connecting ml components
+  - component chaining
+  - data flow management
+  - pipeline optimization
+  - dynamic reconfiguration
 
-## 🎯 Use Cases
+## Use Cases
 
 ### Machine Learning
 - **Neural Networks**: Building blocks for deep learning
@@ -229,7 +228,7 @@ endmodule
 - **Adaptive Systems**: Self-tuning controllers
 - **Real-time Processing**: Low-latency control
 
-## ⚡ Performance
+## Performance
 
 ### Hardware Efficiency
 - **Combinational Logic**: Single-cycle operations
@@ -243,7 +242,7 @@ endmodule
 - **Pipeline-friendly**: Designed for pipelined implementations
 - **Multi-instance**: Support for parallel processing
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
@@ -265,25 +264,25 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - Maintain consistent indentation
 - Add testbenches for new modules
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **SystemVerilog Community**: For the excellent language standard
 - **FPGA Vendors**: For providing excellent synthesis tools
 - **Open Source Community**: For inspiration and best practices
 - **Contributors**: For their valuable contributions
 
-## 📞 Support
+## Support
 
 - **Documentation**: Check our [User Guide](docs/user_guide.md)
 - **Issues**: Report bugs and request features on [GitHub Issues](https://github.com/yourusername/systemverilog-ml-library/issues)
 - **Discussions**: Join our [GitHub Discussions](https://github.com/yourusername/systemverilog-ml-library/discussions)
 - **Email**: Contact us at [your-email@example.com](mailto:your-email@example.com)
 
-## 📊 Statistics
+## Statistics
 
 ![GitHub stars](https://img.shields.io/github/stars/yourusername/systemverilog-ml-library?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/yourusername/systemverilog-ml-library?style=social)
@@ -292,4 +291,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the SystemVerilog and Machine Learning communities**
+**built for the systemverilog and machine learning communities**
