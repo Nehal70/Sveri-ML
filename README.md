@@ -6,6 +6,8 @@
 
 A comprehensive hardware-optimized machine learning library for SystemVerilog, designed for FPGA and ASIC implementation. This library provides efficient fixed-point arithmetic operations, vector processing, and machine learning algorithms optimized for hardware acceleration.
 
+As I went through my HDL Calculator project, I entered a steep learning curve that helped me understand specialized hardware, why its made, how its made and how its used. As someone that has loved algorithmic thinking and machine learning, that's where my mind immediately went. And on researching, I honestly couldn't find open-source System Verilog libraries that provided modules for both neural network layers and classic-machine learning algorithms. While implementations for the former exist [here](https://github.com/KastnerRG/cgra4ml) and through hls4ml, the former is more training-accelerator focused (something I plan on diving into later) and the latter utilizes high-level languages like Python to synthesize the model. An open-source library that provides users System Verilog modules to create building blocks for them to create custom hardware for neural network inference, classical ML inference (like linear / logistic regression), etc. is something worth implementing- especially for students like me interested in the space and looking to test it on simulation / verification tools, FPGAs or create ASICs for it.
+
 
 ## Features
 
